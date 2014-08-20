@@ -1,0 +1,45 @@
+#include<stdio.h>
+#include<conio.h>
+#include<windows.h>
+#include<malloc.h>
+void main()
+{
+//clrscr() ; 
+unsigned _int64 freq,starttime,endtime ;
+double mytime ; 
+
+int *a,*b,*c  ;
+int size = 40000;
+int i= 0, val= 0  ; 
+
+	 a=(int*)malloc(size*sizeof(int));
+     b=(int*)malloc(size*sizeof(int));
+     c=(int*)malloc(size*sizeof(int)); 
+
+	  for( i=0;i<size;i++)
+	 {
+		 *(a+i)=val;
+		b[i]=val*10;
+		 val=val+1;
+	 }
+
+QueryPerformanceFrequency((LARGE_INTEGER*)&freq) ;
+QueryPerformanceCounter((LARGE_INTEGER*)&starttime) ;
+
+//host code
+	  for( i=0;i<size;i++)
+	  {
+	     c[i] = a[i]+b[i];  
+	  }
+//host code ends here
+
+QueryPerformanceCounter((LARGE_INTEGER*)&endtime) ;
+
+mytime = (double)(((endtime - starttime)*1000.0)/freq) ; 
+printf("%f\n",freq) ; 
+printf("%f\n",starttime) ; 
+printf("%f\n",endtime) ; 
+printf("%f",mytime) ; 
+
+getch() ; 
+}

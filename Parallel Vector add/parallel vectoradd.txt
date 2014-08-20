@@ -1,0 +1,103 @@
+#include<stdio.h>
+#include<cuda.h>
+#include<conio.h>
+#include<malloc.h>
+
+__global__ void VectorAdd(int* ga,int *gb,int* gc,int size)
+{
+	int i=threadIdx.x + (blockIdx.x*blockDim.x);
+	if(i<size)
+     gc[i]=ga[i]+gb[i];
+}
+
+
+
+int main()
+{
+
+	 float et;
+	 int n;
+     int size=35000,val=1,i=0;
+	 int *a,*b,*c;
+     int *ga,*gb,*gc;
+     int blocksize=256;
+	 int numOfBlocks;
+
+
+	 numOfBlocks=size/blocksize;
+
+	 if(size%blocksize>0) numOfBlocks++;
+	
+	  
+	 a=(int*)malloc(size*sizeof(int));
+     b=(int*)malloc(size*sizeof(int));
+     c=(int*)malloc(size*sizeof(int)); 
+
+ for(i=0;i<size;i++)
+	 {
+		 *(a+i)=val;
+		b[i]=val*10;
+		 val=val+1;
+	 }
+
+
+
+     cudaMalloc((void**)&ga,size*sizeof(int));
+    cudaMalloc((void**)&gb,size*sizeof(int));
+	 cudaMalloc((void**)&gc,size*sizeof(int));
+
+     cudaMemcpy(ga,a,size*sizeof(int),cudaMemcpyHostToDevice);
+     cudaMemcpy(gb,b,size*sizeof(int),cudaMemcpyHostToDevice);
+    
+
+
+	 cudaEvent_t start,stop;
+	 cudaEventCreate(&start);
+	 cudaEventCreate(&stop);
+	 cudaEventRecord(start,0);
+
+	 VectorAdd<<<numOfBlocks,blocksize>>>(ga,gb,gc,size);
+
+
+
+	 cudaEventRecord(stop,0);
+	 cudaEventSynchronize(stop);
+	 cudaEventElapsedTime(&et,start,stop);
+	 cudaEventDestroy(start);
+	 cudaEventDestroy(stop);
+     cudaDeviceSynchronize();
+     cudaMemcpy(c,gc,size*sizeof(int),cudaMemcpyDeviceToHost);
+	 printf(" parallel %f",et);
+
+
+
+//serial add timer 
+   
+/*
+
+	int counter_size = 0 ; 
+	float eta=0 ; 
+	for (counter_size=0; counter_size<size; counter_size++ )
+	{
+		 c[counter_size]=a[counter_size]+b[counter_size];
+	}
+*/	
+
+
+
+	 	getch();
+}
+
+
+
+
+
+
+
+	/*int *p;
+	printf("\n I am OK");
+	cudaMalloc((void**)&p,100);
+	getchar();
+	cudaFree(p);
+	return 0;*/
+//}

@@ -1,0 +1,85 @@
+#include<stdio.h>
+#include<cuda.h>
+#include<conio.h>
+#include<malloc.h>
+
+__global__ void VectorAdd(int* ga,int size)
+{
+	int i=threadIdx.x + (blockIdx.x*blockDim.x);
+	if(i<size)
+     ga[i]=ga[i]*ga[i];
+}
+
+
+int main()
+{
+
+	 float et;
+	 int n;
+     int size=5000,val=1,i=0;
+	 int *a,*b,*c;
+     int *ga,*gb,*gc;
+     int blocksize=256;
+	 int numOfBlocks;
+
+	 cudaEvent_t start,stop;
+	 cudaEventCreate(&start);
+	 cudaEventCreate(&stop);
+	 cudaEventRecord(start,0);
+	 numOfBlocks=size/blocksize;
+
+	 if(size%blocksize>0) numOfBlocks++;
+	
+	  
+	 a=(int*)malloc(size*sizeof(int));
+     //b=(int*)malloc(size*sizeof(int));
+     //c=(int*)malloc(size*sizeof(int)); 
+
+ for(i=0;i<size;i++)
+	 {
+		 *(a+i)=val;
+		// b[i]=val*10;
+		 val=val+1;
+	 }
+
+
+
+     cudaMalloc((void**)&ga,size*sizeof(int));
+    // cudaMalloc((void**)&gb,size*sizeof(int));
+	 //cudaMalloc((void**)&gc,size*sizeof(int));
+
+     cudaMemcpy(ga,a,size*sizeof(int),cudaMemcpyHostToDevice);
+    // cudaMemcpy(gb,b,size*sizeof(int),cudaMemcpyHostToDevice);
+    
+	 VectorAdd<<<numOfBlocks,blocksize>>>(ga,size);
+
+     cudaDeviceSynchronize();
+     cudaMemcpy(a,ga,size*sizeof(int),cudaMemcpyDeviceToHost);
+
+	 cudaEventRecord(stop,0);
+	 cudaEventSynchronize(stop);
+	 cudaEventElapsedTime(&et,start,stop);
+	 cudaEventDestroy(start);
+	 cudaEventDestroy(stop);
+
+	 printf("%f",et);
+   // for(i=0;i<3;i++)
+    //printf("\t%d",a[i]);
+	getch();
+
+	
+}
+
+
+
+
+
+
+
+	/*int *p;
+	printf("\n I am OK");
+	cudaMalloc((void**)&p,100);
+	getchar();
+	cudaFree(p);
+	return 0;*/
+//}

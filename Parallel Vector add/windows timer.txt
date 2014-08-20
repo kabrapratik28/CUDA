@@ -1,0 +1,34 @@
+//run in windows visual studio only 
+//bz of windows.h
+#include<stdio.h>
+#include<conio.h>
+#include<windows.h>
+void main()
+{
+//clrscr() ; 
+unsigned _int64 freq,starttime,endtime ;
+double mytime ; 
+int j = 0 ,i=0 ; 
+QueryPerformanceFrequency((LARGE_INTEGER*)&freq) ;
+QueryPerformanceCounter((LARGE_INTEGER*)&starttime) ;
+
+//host code
+printf("Hello world!!");
+
+for( i=0;i<32000;i++)
+{
+	j=j+1 ; 
+
+}
+//host code ends here
+
+QueryPerformanceCounter((LARGE_INTEGER*)&endtime) ;
+
+mytime = (double)(((endtime - starttime)*1000.0)/freq) ; 
+printf("%f\n",freq) ; 
+printf("%f\n",starttime) ; 
+printf("%f\n",endtime) ; 
+printf("%f",mytime) ; 
+
+getch() ; 
+}
